@@ -27,8 +27,8 @@ class MLP(nn.Module):
     x = self.layer2(x)
     return x
 
-# model = LinearRegression()
-model = MLP()
+model = LinearRegression()
+# model = MLP()
 criterion = nn.MSELoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
 
@@ -50,9 +50,7 @@ for epoch in range(epochs):
     plt.xlim(x_limits)
     plt.ylim(y_limits)
     plt.legend()
-    plt.draw()  # Use plt.draw() to render the plot
-    plt.pause(0.05)  # Use plt.pause() to ensure the plot gets rendered
+    plt.draw()
+    plt.pause(0.01)
 
-    # print("Press any key to continue.")
-    # plt.waitforbuttonpress()  # Waits for a button press to continue
-    plt.clf()  # Clears the current figure
+    plt.clf()
