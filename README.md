@@ -10,6 +10,8 @@
 
 ## Introduction to Deep Learning
 
-- [ ] Building a simple Neural Network
+- [x] Building a simple Neural Network
+
+![Mnist Network Architectures][img/mnist_nets.png]
 
 - [ ] Building a Convolutional Neural Network (CNN)
