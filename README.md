@@ -12,6 +12,9 @@
 
 - [x] Building a simple Neural Network
 
-![Mnist Network Architectures][img/mnist_nets.png]
+![Mnist Network Architectures](img/mnist_nets.png)
+
+- [torch_nets.py](mnist/torch_nets.py)
+
 
 - [ ] Building a Convolutional Neural Network (CNN)
