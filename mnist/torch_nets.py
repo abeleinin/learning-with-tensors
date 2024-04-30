@@ -48,19 +48,19 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 transform = transforms.Compose([
     transforms.ToTensor(), 
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-batch_size = 64
+batch_size = 128
 
 train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
 test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
 
-train_size = int(0.8 * len(train_dataset))
+train_size = int(0.7 * len(train_dataset))
 val_size = len(train_dataset) - train_size
 train_ds, val_ds = random_split(train_dataset, [train_size, val_size])
 
@@ -71,10 +71,10 @@ epochs = 20
 for epoch in range(epochs):
   model.train()
   running_loss = 0.0
-  for i, (inputs, labels) in enumerate(train_loader, 0):
-    # inputs, labels = inputs.view(inputs.shape[0], -1), labels
+  for i, (images, labels) in enumerate(train_loader, 0):
+    images, labels = images.to(device), labels.to(device)
     optimizer.zero_grad()
-    outputs = model(inputs)
+    outputs = model(images)
     loss = criterion(outputs, labels)
     loss.backward()
     optimizer.step()
@@ -90,9 +90,9 @@ model.eval()
 with torch.no_grad():
     correct = 0
     total = 0
-    for inputs, labels in val_loader:
-      # inputs, labels = inputs.view(inputs.shape[0], -1), labels
-      outputs = model(inputs)
+    for images, labels in val_loader:
+      images, labels = images.to(device), labels.to(device)
+      outputs = model(images)
       _, predicted = torch.max(outputs.data, 1)
       total += labels.size(0)
       correct += (predicted == labels).sum().item()
