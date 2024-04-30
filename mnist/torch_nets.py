@@ -49,10 +49,10 @@ optimizer = optim.Adam(model.parameters(), lr=0.01)
 
 transform = transforms.Compose([
     transforms.ToTensor(), 
-    # transforms.Normalize((0.5,), (0.5,))
+    transforms.Normalize((0.5,), (0.5,))
 ])
 
-batch_size = 32
+batch_size = 64
 
 train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
 test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
@@ -64,7 +64,7 @@ train_ds, val_ds = random_split(train_dataset, [train_size, val_size])
 train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
 
-epochs = 5
+epochs = 20
 for epoch in range(epochs):
   model.train()
   running_loss = 0.0
@@ -79,6 +79,9 @@ for epoch in range(epochs):
     if i % 100 == 99:
       print(f'Epoch [{epoch+1}/{epochs}], Loss: {running_loss/100:.4f}')
       running_loss = 0.0
+
+# Save model
+torch.save(model.state_dict(), 'models/net3.pth')
 
 model.eval()
 with torch.no_grad():
