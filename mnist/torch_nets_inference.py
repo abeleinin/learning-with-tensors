@@ -22,7 +22,7 @@ class Net3(nn.Module):
     return x
 
 model = Net3()
-model.load_state_dict(torch.load('models/net3.pth'))
+model.load_state_dict(torch.load('models/net3.pth', map_location=torch.device('cpu')))
 model.eval()
 
 transform = transforms.Compose([
@@ -31,7 +31,7 @@ transform = transforms.Compose([
 ])
 test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
 
-def show_mnist_predictions(dataset, model, num_images=6):
+def show_mnist_predictions(dataset, model, num_images):
     fig, axes = plt.subplots(1, num_images, figsize=(10, 2))
     
     for i, ax in enumerate(axes):
