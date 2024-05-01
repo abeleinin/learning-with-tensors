@@ -5,21 +5,7 @@ import torch.nn.functional as F
 from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
 
-class Net3(nn.Module):
-  def __init__(self):
-    super(Net3, self).__init__()
-    self.conv1 = nn.Conv2d(1, 32, 3, 1)
-    self.conv2 = nn.Conv2d(32, 64, 3, 1)
-    self.maxpool = nn.MaxPool2d(2)
-    self.out = nn.Linear(12 * 12 * 64, 10)
-
-  def forward(self, x):
-    x = F.relu(self.conv1(x))
-    x = F.relu(self.conv2(x))
-    x = self.maxpool(x)
-    x = x.view(-1, 12 * 12 * 64)
-    x = self.out(x)
-    return x
+from torch_nets import Net3
 
 model = Net3()
 model.load_state_dict(torch.load('models/net3.pth', map_location=torch.device('cpu')))

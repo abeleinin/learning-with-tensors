@@ -1,3 +1,6 @@
+import argparse
+import time
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -12,8 +15,9 @@ class Net1(nn.Module):
     self.layer = nn.Linear(28*28, 10)
   
   def forward(self, x):
-    x = F.relu(self.layer(x))
-    return x
+    out = x.view(-1, 28*28)
+    out = F.relu(self.layer(out))
+    return out
 
 class Net2(nn.Module):
   def __init__(self):
@@ -22,86 +26,106 @@ class Net2(nn.Module):
     self.layer2 = nn.Linear(512, 10)
   
   def forward(self, x):
-    x = F.relu(self.layer1(x))
-    x = F.relu(self.layer2(x))
-    return x
+    out = x.view(-1, 28*28)
+    out = F.relu(self.layer1(out))
+    out = F.relu(self.layer2(out))
+    return out
 
 class Net3(nn.Module):
   def __init__(self):
     super(Net3, self).__init__()
     self.conv1 = nn.Conv2d(1, 32, 5, padding=2)
-    self.maxpool1 = nn.MaxPool2d(3)
-    self.conv2 = nn.Conv2d(32, 64, 2)
-    self.maxpool2 = nn.MaxPool2d(2)
+    self.maxpool1 = nn.MaxPool2d(3) # 8 x 8 x 32
+    self.conv2 = nn.Conv2d(32, 64, 1)
+    self.maxpool2 = nn.MaxPool2d(2) # 4 x 4 x 64
     self.dropout = nn.Dropout(0.25)
     self.fc1 = nn.Linear(4*4*64, 4*4*64)
     self.fc2 = nn.Linear(4*4*64, 10)
 
   def forward(self, x):
     out = F.relu(self.conv1(x))
-    out = self.maxpool(out)
+    out = self.maxpool1(out)
     out = F.relu(self.conv2(out))
+    out = self.maxpool2(out)
     out = out.reshape(out.size(0), -1)
     out = self.dropout(out)
     out = self.fc1(out)
     out = self.dropout(out)
     out = self.fc2(out)
-    return x
+    return out
 
-model = Net3()
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
+def main(args):
+  batch_size = 16
+  num_epochs = 10
+  learning_rate = 1e-3
 
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+  if args.net == 1:
+    model = Net1()
+  elif args.net == 2:
+    model = Net2()
+  elif args.net == 3:
+    model = Net3()
 
-transform = transforms.Compose([
-    transforms.ToTensor(), 
-    transforms.Normalize((0.5,), (0.5,))
-])
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  model.to(device)
 
-batch_size = 32
+  criterion = nn.CrossEntropyLoss()
+  optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
-test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+  transform = transforms.Compose([
+      transforms.ToTensor(), 
+      transforms.Normalize((0.5,), (0.5,))
+  ])
 
-train_size = int(0.7 * len(train_dataset))
-val_size = len(train_dataset) - train_size
-train_ds, val_ds = random_split(train_dataset, [train_size, val_size])
+  train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+  test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
 
-train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
-val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
+  train_size = int(0.7 * len(train_dataset))
+  val_size = len(train_dataset) - train_size
+  train_ds, val_ds = random_split(train_dataset, [train_size, val_size])
 
-epochs = 20
-for epoch in range(epochs):
-  model.train()
-  running_loss = 0.0
-  for i, (images, labels) in enumerate(train_loader, 0):
-    images, labels = images.to(device), labels.to(device)
-    optimizer.zero_grad()
-    outputs = model(images)
-    loss = criterion(outputs, labels)
-    loss.backward()
-    optimizer.step()
-    running_loss += loss.item()
-    if i % 100 == 99:
-      print(f'Epoch [{epoch+1}/{epochs}], Loss: {running_loss/100:.4f}')
-      running_loss = 0.0
+  train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
+  val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
 
-# Save model
-torch.save(model.state_dict(), 'weights/net3.pth')
-
-model.eval()
-with torch.no_grad():
-    correct = 0
-    total = 0
-    for images, labels in val_loader:
+  for epoch in range(num_epochs):
+    tic = time.perf_counter()
+    model.train()
+    running_loss = 0.0
+    for i, (images, labels) in enumerate(train_loader, 0):
       images, labels = images.to(device), labels.to(device)
+      optimizer.zero_grad()
       outputs = model(images)
-      _, predicted = torch.max(outputs.data, 1)
-      total += labels.size(0)
-      correct += (predicted == labels).sum().item()
+      loss = criterion(outputs, labels)
+      loss.backward()
+      optimizer.step()
+      running_loss += loss.item()
+      if i % 100 == 99:
+        toc = time.perf_counter()
+        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/100:.4f}, Time {toc - tic:.3f} (s)')
+        tic = time.perf_counter()
+        running_loss = 0.0
 
-accuracy = 100 * correct / total
-print(f'Accuracy of the model on the test images: {accuracy:.2f}%')
+  # Save model
+  if args.save:
+    torch.save(model.state_dict(), f'weights/net{str(args.net)}.pth')
 
+  model.eval()
+  with torch.no_grad():
+      correct = 0
+      total = 0
+      for images, labels in val_loader:
+        images, labels = images.to(device), labels.to(device)
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+  accuracy = 100 * correct / total
+  print(f'Accuracy of the model on the test images: {accuracy:.2f}%')
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser("Train a simple neural network on MNIST with PyTorch.")
+  parser.add_argument("--net", type=int, default=1)
+  parser.add_argument("--save", type=bool, default=False)
+  args = parser.parse_args()
+  main(args)

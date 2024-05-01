@@ -12,7 +12,7 @@ TODO:
 
 ## Introduction to Deep Learning
 
-#### Building a simple Neural Network
+### Building a simple Neural Network
 
 Below are 3 simple neural network architectures with implementations in [torch_nets.py](mnist/torch_nets.py). Net 1 depicts a single layer network which feeds the input layer of size 784 into a size 10 output layer. Net 2 depicts a 2-layer network with a single hidden layer of size 12, which feeds into the size 10 output layer. Net 3 depicts a convolutional network with local connectivity between the layers. 
 
