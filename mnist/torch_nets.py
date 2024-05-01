@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, random_split
 class Net1(nn.Module):
   def __init__(self):
     super(Net1, self).__init__()
-    self.layer = nn.Linear(28 * 28, 10)
+    self.layer = nn.Linear(28*28, 10)
   
   def forward(self, x):
     x = F.relu(self.layer(x))
@@ -18,29 +18,34 @@ class Net1(nn.Module):
 class Net2(nn.Module):
   def __init__(self):
     super(Net2, self).__init__()
-    self.layer1 = nn.Linear(28 * 28, 12)
-    self.layer2 = nn.Linear(12, 10)
+    self.layer1 = nn.Linear(28*28, 512)
+    self.layer2 = nn.Linear(512, 10)
   
   def forward(self, x):
     x = F.relu(self.layer1(x))
     x = F.relu(self.layer2(x))
     return x
 
-# Local Connectivity
 class Net3(nn.Module):
   def __init__(self):
     super(Net3, self).__init__()
-    self.conv1 = nn.Conv2d(1, 32, 3, 1)
-    self.conv2 = nn.Conv2d(32, 64, 3, 1)
-    self.maxpool = nn.MaxPool2d(2)
-    self.out = nn.Linear(12 * 12 * 64, 10)
+    self.conv1 = nn.Conv2d(1, 32, 5, padding=2)
+    self.maxpool1 = nn.MaxPool2d(3)
+    self.conv2 = nn.Conv2d(32, 64, 2)
+    self.maxpool2 = nn.MaxPool2d(2)
+    self.dropout = nn.Dropout(0.25)
+    self.fc1 = nn.Linear(4*4*64, 4*4*64)
+    self.fc2 = nn.Linear(4*4*64, 10)
 
   def forward(self, x):
-    x = F.relu(self.conv1(x))
-    x = F.relu(self.conv2(x))
-    x = self.maxpool(x)
-    x = x.view(-1, 12 * 12 * 64)
-    x = self.out(x)
+    out = F.relu(self.conv1(x))
+    out = self.maxpool(out)
+    out = F.relu(self.conv2(out))
+    out = out.reshape(out.size(0), -1)
+    out = self.dropout(out)
+    out = self.fc1(out)
+    out = self.dropout(out)
+    out = self.fc2(out)
     return x
 
 model = Net3()
@@ -55,7 +60,7 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-batch_size = 128
+batch_size = 32
 
 train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
 test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
@@ -84,7 +89,7 @@ for epoch in range(epochs):
       running_loss = 0.0
 
 # Save model
-torch.save(model.state_dict(), 'models/net3.pth')
+torch.save(model.state_dict(), 'weights/net3.pth')
 
 model.eval()
 with torch.no_grad():
