@@ -55,8 +55,8 @@ class Net3(nn.Module):
     return out
 
 def main(args):
-  batch_size = 16
-  num_epochs = 10
+  batch_size = args.batch
+  num_epochs = 20
   learning_rate = 1e-3
 
   if args.net == 1:
@@ -71,6 +71,7 @@ def main(args):
 
   criterion = nn.CrossEntropyLoss()
   optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+  scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
   transform = transforms.Compose([
       transforms.ToTensor(), 
@@ -86,6 +87,7 @@ def main(args):
 
   train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
   val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
+  test_dataset = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
   for epoch in range(num_epochs):
     tic = time.perf_counter()
@@ -104,6 +106,11 @@ def main(args):
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/100:.4f}, Time {toc - tic:.3f} (s)')
         tic = time.perf_counter()
         running_loss = 0.0
+    scheduler.step()
+    model.eval()
+    with torch.no_grad():
+      validation_loss = sum(criterion(model(data.to(device)), target.to(device)) for data, target in val_loader)
+    print(f'Validation Loss: {validation_loss / len(val_loader)}')
 
   # Save model
   if args.save:
@@ -113,7 +120,7 @@ def main(args):
   with torch.no_grad():
       correct = 0
       total = 0
-      for images, labels in val_loader:
+      for images, labels in test_dataset:
         images, labels = images.to(device), labels.to(device)
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
@@ -126,6 +133,7 @@ def main(args):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser("Train a simple neural network on MNIST with PyTorch.")
   parser.add_argument("--net", type=int, default=1)
+  parser.add_argument("--batch", type=int, default=16)
   parser.add_argument("--save", type=bool, default=False)
   args = parser.parse_args()
   main(args)
