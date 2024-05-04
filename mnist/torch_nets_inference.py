@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from torch_nets import Net3
 
 model = Net3()
-model.load_state_dict(torch.load('models/net3.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load('weights/net3.pth', map_location=torch.device('cpu')))
 model.eval()
 
 transform = transforms.Compose([
