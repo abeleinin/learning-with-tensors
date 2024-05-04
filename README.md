@@ -22,6 +22,12 @@ Below are 3 simple neural network architectures with implementations in [torch_n
 
 ## Implementing Papers: Vision Models
 
-- [ ] AlexNet - [ImageNet Classification with Deep Convolutional Neural Networks](https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf)
+### Implement AlexNet 
+
+Paper: [ImageNet Classification with Deep Convolutional Neural Networks](https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf)
+
+Code: [torch_alexnet.py](alexnet/torch_alexnet.py)
+
+![AlexNet Network Architectures](img/alexnet_architecture.png)
 
 - [ ] ResNet - [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
