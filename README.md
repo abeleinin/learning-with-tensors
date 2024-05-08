@@ -24,9 +24,13 @@ Net 3 depicts a convolutional neural network using local connectivity and [dropo
 
 Code: [torch_nets.py](mnist/torch_nets.py)
 
-TODO:
+### Implement a Recurrent Neural Network
 
-- [ ] RNN - Implementing a simple Recurrent Neural Network 
+![LSTM Architectures](img/lstm_block.png)
+
+Paper: [Long Short-Term Memory](https://deeplearning.cs.cmu.edu/F23/document/readings/LSTM.pdf)
+
+Code: WIP
 
 ## Implementing Papers: Vision Models
 
