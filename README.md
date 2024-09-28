@@ -2,13 +2,11 @@
 
 ## The Building Blocks
 
-TODO:
+- [Mathematics for Machine Learning](https://mml-book.github.io/book/mml-book.pdf) 
 
-- [ ] Overview of Linear Algebra
+- [An Overview of Gradient Descent Optimization Algorithms](https://arxiv.org/pdf/1609.04747) by Sebastian Ruder
 
-- [ ] Gradient Descent and Optimizations
-
-- [ ] Demonstrate regression as a learning task
+- [Efficient BackProp](https://cseweb.ucsd.edu/classes/wi08/cse253/Handouts/lecun-98b.pdf) by (LeCun et al. 1998)
 
 ## Introduction to Deep Learning
 
