@@ -19,7 +19,7 @@ def GP(X1, y1, X2, kernel_func):
     Sigma11 = kernel_func(X1, X1)
     Sigma12 = kernel_func(X1, X2)
 
-	# solve for (Sigma11^-1 * Sigma12)
+    # solve for (Sigma11^-1 * Sigma12)
     solved = mx.linalg.solve(Sigma11, Sigma12, stream=mx.cpu).T
 
     # posterior mean
@@ -98,4 +98,3 @@ ax.set_title('Interactive MLX Gaussian Process')
 cid = fig.canvas.mpl_connect('button_press_event', onclick)
 plt.tight_layout()
 plt.show()
-
