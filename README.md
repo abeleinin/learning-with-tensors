@@ -1,12 +1,20 @@
 # Learning with Tensors
 
-## The Building Blocks
+Random machine learning and deep learning notebooks and implementations.
 
-1. [Mathematics for Machine Learning](https://mml-book.github.io/book/mml-book.pdf)
-2. [An Overview of Gradient Descent Optimization Algorithms](https://arxiv.org/pdf/1609.04747) by Sebastian Ruder
-3. [Efficient BackProp](https://cseweb.ucsd.edu/classes/wi08/cse253/Handouts/lecun-98b.pdf) by Yann LeCun et al., 1998
+## Table of contents
 
-## Introduction to Deep Learning
+- [Machine Learning](#machine-learning)
+- [Deep Learning](#deep-learning)
+- [References](#references)
+
+## Machine Learning
+
+### Gaussian Process
+
+- [gp](./gp/)
+
+## Deep Learning
 
 ### Building a Simple Neural Network
 
@@ -21,3 +29,9 @@
 ### Implementing a Recurrent Neural Network
 
 ![LSTM Architectures](img/lstm_block.png)
+
+## References
+
+- [Mathematics for Machine Learning](https://mml-book.github.io/book/mml-book.pdf)
+- [An Overview of Gradient Descent Optimization Algorithms](https://arxiv.org/pdf/1609.04747) by Sebastian Ruder
+- [Efficient BackProp](https://cseweb.ucsd.edu/classes/wi08/cse253/Handouts/lecun-98b.pdf) by Yann LeCun et al., 1998
